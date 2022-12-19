@@ -1,0 +1,40 @@
+import { Injectable } from '@nestjs/common';
+import { Cat } from './entities/cat.entity';
+
+@Injectable()
+export class CatsService {
+  private cats: Cat[] = [
+    {
+      id: 1,
+      name: 'Padlik',
+      bread: 'British',
+      colors: ['Black', 'Gray', 'White'],
+    },
+  ];
+
+  findAll() {
+    return this.cats;
+  }
+
+  findOne(id: string) {
+    return this.cats.find((el) => el.id === +id);
+  }
+
+  createNewCat(newCat: any) {
+    return this.cats.push(newCat);
+  }
+
+  updateCat(id: string, newCat: any) {
+    const isCatExists = this.findOne(id);
+    if (isCatExists) {
+      //update the existing entity
+    }
+  }
+
+  deleteCat(id: string) {
+    const catIndex = this.cats.findIndex((el) => el.id === +id);
+    if (catIndex >= 0) {
+      this.cats.splice(catIndex, 1);
+    }
+  }
+}
