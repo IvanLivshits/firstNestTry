@@ -8,6 +8,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { CatsService } from 'src/cats/cats.service';
+import { CreateCatDto } from './dto/create-cat.dto/create-cat.dto';
+import { UpdateCatDto } from './dto/update-cat.dto/update-cat.dto';
 
 @Controller('cats')
 export class GetCatController {
@@ -31,13 +33,13 @@ export class GetCatController {
   }
 
   @Post()
-  createNewCat(@Body() body) {
-    return this.catsService.createNewCat(body);
+  createNewCat(@Body() createCatDto: CreateCatDto) {
+    return this.catsService.createNewCat(createCatDto);
   }
 
   @Patch(':id')
-  updateCat(@Param('id') id: string, @Body() body) {
-    return this.catsService.updateCat(id, body);
+  updateCat(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
+    return this.catsService.updateCat(id, updateCatDto);
   }
 
   @Delete(':id')
