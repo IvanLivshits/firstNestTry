@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Cat } from './entities/cat.entity';
 
 @Injectable()
@@ -17,7 +22,12 @@ export class CatsService {
   }
 
   findOne(id: string) {
-    return this.cats.find((el) => el.id === +id);
+    const cat = this.cats.find((el) => el.id === +id);
+    if (!cat) {
+      //throw new HttpException(`Cat #${id} not found`, HttpStatus.NOT_FOUND);
+      throw new NotFoundException(`Cat #${id} not found`);
+    }
+    return cat;
   }
 
   createNewCat(newCat: any) {
