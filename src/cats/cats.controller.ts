@@ -17,7 +17,7 @@ export class GetCatController {
 
   @Get()
   findAll() {
-    return this.catsService.findAll();
+    return this.catsService.findAllCats();
   }
 
   //Method with pagination
@@ -29,7 +29,7 @@ export class GetCatController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.catsService.findOne(id);
+    return this.catsService.findOneCat(+id);
   }
 
   @Post()

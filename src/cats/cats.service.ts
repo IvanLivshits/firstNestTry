@@ -1,46 +1,46 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateCatDto } from './dto/create-cat.dto/create-cat.dto';
 import { Cat } from './entities/cat.entity';
 
 @Injectable()
 export class CatsService {
-  private cats: Cat[] = [
-    {
-      id: 1,
-      name: 'Padlik',
-      bread: 'British',
-      colors: ['Black', 'Gray', 'White'],
-    },
-  ];
+  constructor(
+    @InjectRepository(Cat)
+    private readonly catsRepository: Repository<Cat>,
+  ) {}
 
-  findAll() {
-    return this.cats;
+  findAllCats() {
+    return this.catsRepository.find();
   }
 
-  findOne(id: string) {
-    const cat = this.cats.find((el) => el.id === +id);
+  async findOneCat(id: number) {
+    const cat = await this.catsRepository.findOneBy({ id });
     if (!cat) {
-      //throw new HttpException(`Cat #${id} not found`, HttpStatus.NOT_FOUND);
       throw new NotFoundException(`Cat #${id} not found`);
     }
     return cat;
   }
 
-  createNewCat(createCatDto: any) {
-    this.cats.push(createCatDto);
-    return createCatDto;
+  createNewCat(createCatDto: CreateCatDto) {
+    const cat = this.catsRepository.create(createCatDto);
+    return this.catsRepository.save(cat);
   }
 
-  updateCat(id: string, updateCatDto: any) {
-    const isCatExists = this.findOne(id);
-    if (isCatExists) {
-      //update the existing entity
+  async updateCat(id: string, updateCatDto: any) {
+    const cat = await this.catsRepository.preload({
+      id: +id,
+      ...updateCatDto,
+    });
+    if (!cat) {
+      throw new NotFoundException(`Cat with number ${id} not found`);
     }
+    return this.catsRepository.save(cat);
   }
 
-  deleteCat(id: string) {
-    const catIndex = this.cats.findIndex((el) => el.id === +id);
-    if (catIndex >= 0) {
-      this.cats.splice(catIndex, 1);
-    }
+  async deleteCat(id: string) {
+    const cat = await this.findOneCat(+id);
+    return this.catsRepository.remove(cat);
   }
 }
