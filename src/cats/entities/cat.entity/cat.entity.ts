@@ -13,7 +13,7 @@ export class Cat {
   id: number;
 
   @Column()
-  name: string;
+  title: string;
 
   @Column()
   bread: string;
