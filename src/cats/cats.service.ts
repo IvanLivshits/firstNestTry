@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
-import { Repository } from 'typeorm';
+import { Event } from 'src/events/entities/event.entity/event.entity';
+import { Connection, Repository } from 'typeorm';
 import { CreateCatDto } from './dto/create-cat.dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto/update-cat.dto';
 import { Cat } from './entities/cat.entity/cat.entity';
@@ -14,6 +15,7 @@ export class CatsService {
     private readonly catsRepository: Repository<Cat>,
     @InjectRepository(Color)
     private readonly colorRepository: Repository<Color>,
+    private readonly connection: Connection,
   ) {}
 
   findAllCats(paginationQuery: PaginationQueryDto) {
@@ -75,5 +77,29 @@ export class CatsService {
       return existingColor;
     }
     return this.colorRepository.create({ name });
+  }
+
+  async recommendCat(cat: Cat) {
+    const queryRunner = this.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      cat.recommendations++;
+
+      const recommendEvent = new Event();
+      recommendEvent.name = 'recommend_cat';
+      recommendEvent.type = 'cat';
+      recommendEvent.payload = { catId: cat.id };
+
+      await queryRunner.manager.save(cat);
+      await queryRunner.manager.save(recommendEvent);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

@@ -18,6 +18,9 @@ export class Cat {
   @Column()
   bread: string;
 
+  @Column({ default: 0 })
+  recommendations: number;
+
   @JoinTable()
   @ManyToMany((type) => Color, (color) => color.cats, {
     cascade: true, // ['insert']
