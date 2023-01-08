@@ -6,8 +6,10 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CatsService } from 'src/cats/cats.service';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto/pagination-query.dto';
 import { CreateCatDto } from './dto/create-cat.dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto/update-cat.dto';
 
@@ -15,17 +17,17 @@ import { UpdateCatDto } from './dto/update-cat.dto/update-cat.dto';
 export class GetCatController {
   constructor(private readonly catsService: CatsService) {}
 
-  @Get()
-  findAll() {
-    return this.catsService.findAllCats();
-  }
-
-  //Method with pagination
   // @Get()
-  // findAll(@Query() paginationQuery) {
-  //   const { limit, offset } = paginationQuery;
-  //   return `This action returns all cats. Limit: ${limit}. Offset: ${offset}`;
+  // findAll() {
+  //   return this.catsService.findAllCats();
   // }
+
+  // Method with pagination
+  @Get()
+  findAll(@Query() paginationQuery: PaginationQueryDto) {
+    // const { limit, offset } = paginationQuery;
+    return this.catsService.findAllCats(paginationQuery);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
