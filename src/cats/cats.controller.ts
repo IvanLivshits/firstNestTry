@@ -17,15 +17,8 @@ import { UpdateCatDto } from './dto/update-cat.dto/update-cat.dto';
 export class GetCatController {
   constructor(private readonly catsService: CatsService) {}
 
-  // @Get()
-  // findAll() {
-  //   return this.catsService.findAllCats();
-  // }
-
-  // Method with pagination
   @Get()
   findAll(@Query() paginationQuery: PaginationQueryDto) {
-    // const { limit, offset } = paginationQuery;
     return this.catsService.findAllCats(paginationQuery);
   }
 
@@ -45,7 +38,7 @@ export class GetCatController {
   }
 
   @Delete(':id')
-  deleleCat(@Param('id') id: string) {
+  deleteCat(@Param('id') id: string) {
     return this.catsService.deleteCat(id);
   }
 }
